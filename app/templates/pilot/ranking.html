@@ -1,0 +1,42 @@
+{% extends "base.html" %}{% block title %}My vacation{% endblock %}
+{% block body %}
+<h1>My {{ cal.year }} vacation</h1>
+<p class="muted">{{ u.full_name }} · {{ u.role }} · Group {{ u.group }} · hired {{ u.hire_date }}</p>
+
+{% if vacation %}
+<div class="card result"><h2>Your vacation week: {{ vacation }}</h2><p class="muted">The schedule has been published. You will get an email if it changes.</p></div>
+{% endif %}
+
+{% if is_open %}
+<div class="flash info">
+  Drag your duty weeks into <strong>My ranking</strong>, most wanted at the top. You can rank as many or as few as you like.
+  <strong>Weeks you leave in "Not ranked" will not be used for your preferences.</strong> If none of your ranked weeks can be given to you,
+  the scheduler picks a week for you by seniority (Rule 11).
+  Press <strong>Submit</strong> to save. You can change and resubmit until the schedule is run{% if deadline %} or until {{ deadline }}{% endif %}.
+</div>
+{% else %}
+<div class="flash info">Rankings are closed. This is the list you submitted.</div>
+{% endif %}
+<p class="muted small">{% if u.prefs_submitted_at %}Last submitted {{ u.prefs_submitted_at.strftime('%Y-%m-%d %H:%M') }} UTC.{% else %}<strong>You have not submitted a ranking yet.</strong>{% endif %}</p>
+
+<form method="post" id="rank-form">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <div class="rank-lists {% if not is_open %}locked{% endif %}">
+    <section class="card">
+      <h2>My ranking <span class="muted small">(1 = most wanted)</span></h2>
+      <ol id="ranked" class="dnd">
+        {% for p in ranked %}<li draggable="true" data-key="{{ p.key }}"><span class="grip">⋮⋮</span><span class="lbl">{{ p.label() }}</span>{% if is_open %}<span class="acts"><button type="button" data-act="up" title="Move up">↑</button><button type="button" data-act="down" title="Move down">↓</button><button type="button" data-act="remove" title="Remove from ranking">✕</button></span>{% endif %}</li>{% endfor %}
+      </ol>
+      <p class="empty muted small">Drag weeks here, or press + next to a week.</p>
+    </section>
+    <section class="card unranked-box">
+      <h2>Not ranked <span class="muted small">(Rule 11 applies if no ranked week is available)</span></h2>
+      <ul id="unranked" class="dnd">
+        {% for p in unranked %}<li draggable="true" data-key="{{ p.key }}"><span class="grip">⋮⋮</span><span class="lbl">{{ p.label() }}</span>{% if is_open %}<span class="acts"><button type="button" data-act="add" title="Add to ranking">+</button></span>{% endif %}</li>{% endfor %}
+      </ul>
+    </section>
+  </div>
+  {% if is_open %}<div class="submit-bar"><button class="go">Submit my ranking</button> <span id="dirty" class="muted small" hidden>You have changes that are not submitted yet.</span></div>{% endif %}
+</form>
+{% if is_open %}<script src="{{ url_for('static', filename='ranking.js') }}"></script>{% endif %}
+{% endblock %}

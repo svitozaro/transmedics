@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block title %}Outbox{% endblock %}
+{% block body %}
+<h1>Outbox</h1>
+{% if email_backend == 'outbox' %}
+<p class="flash info">Email is not connected yet. Nothing on this page was actually sent. This shows what each person would receive. Links in these emails work on this computer, so you can use them to test.</p>
+{% endif %}
+<div class="mail-list">
+{% for m in msgs %}
+  <details class="card">
+    <summary><span class="muted">{{ m.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</span> · <strong>{{ m.to }}</strong> · {{ m.subject }} <span class="tag">{{ m.status }}</span></summary>
+    <pre class="mail">{{ m.body|urlize }}</pre>
+  </details>
+{% else %}<p class="muted">No emails yet.</p>{% endfor %}
+</div>
+<h2>Activity log</h2>
+<table class="list small">
+  {% for a in log %}<tr><td class="muted">{{ a.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</td><td>{{ a.actor }}</td><td>{{ a.action }}</td></tr>{% endfor %}
+</table>
+{% endblock %}

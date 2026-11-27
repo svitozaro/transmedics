@@ -1,0 +1,70 @@
+{% extends "base.html" %}{% block title %}Users{% endblock %}
+{% block body %}
+<h1>User management</h1>
+
+<div class="grid2">
+<section class="card">
+  <h2>1. Upload the pilot list (CSV)</h2>
+  <p class="muted">Columns: <code>first name, last name, role (PIC or SIC), date of hire, group (A or B)</code>, and optionally <code>email</code>.
+  Without an email column, emails are made as <code>firstname.lastname@{{ domain }}</code>.
+  Pilots already in the system (same email) are updated, not duplicated.
+  If any row has a problem, nothing is imported and you will see which rows to fix.</p>
+  <form method="post" action="{{ url_for('admin.import_csv') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="file" name="file" accept=".csv,text/csv" required>
+    <button>Upload</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>2. Let people sign in</h2>
+  <p class="muted">Each person gets their own email with a link to choose a password. Nobody shares a default password.
+  This sends a link to everyone who has not set a password yet.</p>
+  <form method="post" action="{{ url_for('admin.invite_all') }}">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <button>Send invitations</button>
+  </form>
+  {% if email_backend == 'outbox' %}<p class="muted small">Email is not connected yet, so messages go to the <a href="{{ url_for('admin.outbox') }}">Outbox</a> page instead of being sent.</p>{% endif %}
+</section>
+</div>
+
+<details class="card">
+  <summary><strong>Add one person by hand</strong></summary>
+  <form method="post" action="{{ url_for('admin.user_new') }}" class="row-form">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <label>First name <input name="first_name" required></label>
+    <label>Last name <input name="last_name" required></label>
+    <label>Email <input name="email" type="email" required placeholder="name@{{ domain }}"></label>
+    <label>Role <select name="role">{% for r in roles %}<option>{{ r }}</option>{% endfor %}</select></label>
+    <label>Group <select name="group"><option value="">(admins: none)</option><option>A</option><option>B</option></select></label>
+    <label>Date of hire <input name="hire_date" type="date"></label>
+    <button>Add and send invitation</button>
+  </form>
+</details>
+
+<form method="get" class="filters">
+  <input name="q" value="{{ q }}" placeholder="Search name or email">
+  <button class="secondary">Search</button>
+  <span class="muted">{{ users|length }} account(s)</span>
+</form>
+<div class="table-wrap">
+<table class="list">
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Group</th><th>Date of hire</th><th>Password</th><th>Rankings</th><th></th></tr></thead>
+  <tbody>
+  {% for u in users %}
+  <tr class="{% if not u.active %}inactive{% endif %}">
+    <td>{{ u.last_name }}, {{ u.first_name }}</td>
+    <td>{{ u.email }}</td>
+    <td><span class="tag {{ u.role|lower }}">{{ u.role }}</span></td>
+    <td>{{ u.group or '' }}</td>
+    <td>{{ u.hire_date or '' }}</td>
+    <td>{% if not u.password_hash %}<span class="warn">not set</span>{% elif u.must_change_password %}temporary{% else %}set{% endif %}</td>
+    <td>{% if u.is_pilot %}{% if u.prefs_submitted_at %}submitted{% else %}<span class="muted">none</span>{% endif %}{% endif %}</td>
+    <td><a href="{{ url_for('admin.user_edit', uid=u.id) }}">Edit</a></td>
+  </tr>
+  {% else %}<tr><td colspan="8" class="muted">No users yet. Upload a CSV above.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="muted small">Passwords are stored scrambled (hashed), so nobody, including admins, can read them. Use Edit to set a temporary password or send a new link.</p>
+{% endblock %}

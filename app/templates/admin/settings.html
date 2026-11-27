@@ -1,0 +1,25 @@
+{% extends "base.html" %}{% block title %}Settings{% endblock %}{% block mainclass %}narrow{% endblock %}
+{% block body %}
+<h1>Settings</h1>
+<form method="post" class="card">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  {% for k, v in values.items() %}
+  <label>{{ meta[k][1] }}
+    {% if k in ('cycle_start', 'ranking_deadline') %}<input type="date" name="{{ k }}" value="{{ v }}">
+    {% else %}<input type="number" min="0" name="{{ k }}" value="{{ v }}" required>{% endif %}
+    <span class="hint">{{ meta[k][2] }}</span>
+  </label>
+  {% endfor %}
+  <button>Save settings</button>
+</form>
+<section class="card">
+  <h2>Duty periods for {{ cal.year }}</h2>
+  <p class="muted">Worked out from the settings above. Each is 8 days. A period counts for the year it starts in.</p>
+  <div class="grid2">
+  {% for g in 'AB' %}
+    <div><h3>Group {{ g }} ({{ cal.by_group[g]|length }})</h3>
+      <ol class="small">{% for k in cal.by_group[g] %}<li>{{ cal.labels[k] }}</li>{% endfor %}</ol></div>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}

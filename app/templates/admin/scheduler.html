@@ -1,0 +1,123 @@
+{% extends "base.html" %}{% block title %}Scheduler{% endblock %}{% block mainclass %}wide{% endblock %}
+{% block body %}
+<div class="head-row">
+  <h1>Vacation schedule {{ cal.year }}</h1>
+  <span class="status {{ status }}">{{ {'not_run': 'Collecting rankings', 'draft': 'Draft (not visible to pilots)', 'published': 'Published'}[status] }}</span>
+</div>
+
+<div class="card controls">
+  <div class="stats">
+    <div><strong>{{ total }}</strong> pilots</div>
+    <div><strong>{{ submitted }}</strong> submitted rankings</div>
+    <div>Rankings are <strong>{{ 'open' if rankings_open else 'locked' }}</strong></div>
+    <div>Limits: {{ caps.PIC }} PIC + {{ caps.SIC }} SIC per period{% if need %}, {{ need }} crews on duty{% endif %} (<a href="{{ url_for('admin.settings_page') }}">change</a>)</div>
+    {% if last_run %}<div class="muted">Last run {{ last_run }} UTC</div>{% endif %}
+    {% if last_published %}<div class="muted">Last published {{ last_published }} UTC</div>{% endif %}
+  </div>
+  <div class="buttons">
+    {% if status != 'published' %}
+    <form method="post" action="{{ url_for('admin.run') }}" {% if status == 'draft' %}onsubmit="return confirm('Run again? This replaces the current draft, including any changes made by hand.')"{% endif %}>
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <button>{{ 'Run the scheduler again' if status == 'draft' else 'Run the scheduler' }}</button>
+    </form>
+    {% endif %}
+    {% if status == 'draft' %}
+    <form method="post" action="{{ url_for('admin.publish') }}" onsubmit="return confirm('Publish? Pilots will be emailed{{ ' about changes' if published else '' }}.')">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <button class="go">Publish</button>
+    </form>
+    <form method="post" action="{{ url_for('admin.reset') }}" onsubmit="return confirm('Discard this draft and let pilots change their rankings again?')">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <button class="secondary">Discard draft and reopen rankings</button>
+    </form>
+    {% endif %}
+    {% if status == 'published' %}
+    <form method="post" action="{{ url_for('admin.unpublish') }}">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <button class="secondary">Unpublish to make changes</button>
+    </form>
+    {% endif %}
+    {% if status != 'not_run' %}<a class="button secondary" href="{{ url_for('admin.export') }}">Download as CSV</a>{% endif %}
+    {% if test_tools and rankings_open %}
+    <form method="post" action="{{ url_for('admin.fill_preferences') }}">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <button class="secondary" title="For testing only">Test: fill random rankings</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+{% if problems %}
+<div class="flash error"><strong>Check before publishing:</strong><ul>{% for p in problems %}<li>{{ p }}</li>{% endfor %}</ul></div>
+{% endif %}
+
+<form method="get" class="filters">
+  <label>Group <select name="group" onchange="this.form.submit()"><option value="">Both</option>{% for g in 'AB' %}<option {% if g == group %}selected{% endif %}>{{ g }}</option>{% endfor %}</select></label>
+  <label>Role <select name="role" onchange="this.form.submit()"><option value="">All</option>{% for r in ['PIC','SIC'] %}<option {% if r == role %}selected{% endif %}>{{ r }}</option>{% endfor %}</select></label>
+  <span class="legend">
+    <span class="cell r">3</span> ranked (number = preference)
+    <span class="cell un">&ndash;</span> duty week, not ranked
+    <span class="cell vac preference">1</span> vacation from a ranking
+    <span class="cell vac rule11">R</span> vacation by Rule 11
+    <span class="cell vac manual">M</span> set by hand
+    <span class="cell off"></span> off duty (other group)
+  </span>
+</form>
+{% if status == 'draft' %}<p class="muted small">Hover over a vacation week to see why it was assigned. Click any of a pilot's duty weeks to move their vacation there.</p>
+{% elif status == 'published' %}<p class="muted small">Hover over a vacation week to see why it was assigned. Unpublish to make changes.</p>{% endif %}
+
+{% if not pilots %}
+<p class="card muted">No pilots yet. <a href="{{ url_for('admin.users') }}">Upload the pilot list</a> first.</p>
+{% else %}
+<div class="table-wrap cal-wrap">
+<table class="cal" data-status="{{ status }}">
+  <thead>
+    <tr>
+      <th class="sticky">#</th><th class="sticky2">Pilot</th><th>Role</th><th>Grp</th><th>Hired</th><th>Vacation</th>
+      {% for p in periods %}<th class="ph g{{ p.group }}" title="Group {{ p.group }}: {{ p.label() }}"><span>{{ p.start.strftime('%b') }}<br>{{ p.start.day }}</span><small>{{ p.group }}</small></th>{% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+  {% for u in pilots %}
+    {% set a = by_user.get(u.id) %}{% set pr = prefs.get(u.id, {}) %}
+    <tr id="u{{ u.id }}">
+      <td class="sticky muted">{{ seniority[u.id] }}</td>
+      <td class="sticky2 name">{{ u.last_name }}, {{ u.first_name }}{% if not u.prefs_submitted_at %} <span class="muted small" title="Has not submitted rankings">(no ranking)</span>{% endif %}</td>
+      <td><span class="tag {{ u.role|lower }}">{{ u.role }}</span></td>
+      <td>{{ u.group }}</td>
+      <td class="small">{{ u.hire_date }}</td>
+      <td class="small">{% if a and a.period %}{{ cal.labels[a.period] }}{% elif a %}<span class="warn">none</span>{% endif %}</td>
+      {% for p in periods %}
+        {% if p.group != u.group %}<td class="cell off"></td>
+        {% else %}
+          {% set isvac = a and a.period == p.key %}{% set rank = pr.get(p.key) %}
+          <td class="cell {% if isvac %}vac {{ a.source }}{% elif rank %}r{% else %}un{% endif %}"
+              data-user="{{ u.id }}" data-period="{{ p.key }}" data-name="{{ u.full_name }}" data-label="{{ p.label() }}"
+              {% if isvac %}data-tip="{{ a.explanation }}"{% else %}title="{{ p.label() }}{% if rank %}: preference #{{ rank }}{% else %}: not ranked{% endif %}"{% endif %}>
+            {%- if isvac -%}{{ a.rank or ('R' if a.source == 'rule11' else 'M') }}{%- elif rank -%}{{ rank }}{%- else -%}&ndash;{%- endif -%}
+          </td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+  <tfoot>
+    {% for r in ['PIC', 'SIC'] %}
+    <tr><td class="sticky"></td><td class="sticky2" colspan="1">{{ r }}s off</td><td colspan="4"></td>
+      {% for p in periods %}{% set n = counts.get(p.key, {}).get(r, 0) %}<td class="count {% if n > caps[r] %}over{% elif n == caps[r] %}full{% endif %}">{{ n }}</td>{% endfor %}</tr>
+    {% endfor %}
+    <tr><td class="sticky"></td><td class="sticky2">Crews on duty</td><td colspan="4"></td>
+      {% for p in periods %}<td class="count {% if need and crews[p.key] < need %}over{% endif %}">{{ crews[p.key] }}</td>{% endfor %}</tr>
+  </tfoot>
+</table>
+</div>
+{% endif %}
+
+<form id="assign-form" method="post" action="{{ url_for('admin.assign') }}" hidden>
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <input type="hidden" name="user_id"><input type="hidden" name="period">
+  <input type="hidden" name="g" value="{{ group }}"><input type="hidden" name="r" value="{{ role }}">
+</form>
+<div id="tip" class="tip" hidden></div>
+<script src="{{ url_for('static', filename='scheduler.js') }}"></script>
+{% endblock %}
