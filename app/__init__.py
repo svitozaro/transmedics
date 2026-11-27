@@ -17,6 +17,16 @@ def _secret_key(instance: Path) -> str:
     return path.read_text().strip()
 
 
+def _default_base_url():
+    """Links in emails. Inside GitHub Codespaces, use the codespace's forwarded address."""
+    name = os.environ.get("CODESPACE_NAME")
+    domain = os.environ.get("GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN")
+    port = os.environ.get("PORT", "8000")
+    if name and domain:
+        return f"https://{name}-{port}.{domain}"
+    return f"http://127.0.0.1:{port}"
+
+
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     instance = Path(app.instance_path)
@@ -35,7 +45,7 @@ def create_app(test_config=None):
         SMTP_PASSWORD=os.environ.get("SMTP_PASSWORD", ""),
         EMAIL_FROM=os.environ.get("EMAIL_FROM", "scheduler@transmedics.com"),
         # Used to build links in emails.
-        BASE_URL=os.environ.get("BASE_URL", "http://127.0.0.1:8000"),
+        BASE_URL=os.environ.get("BASE_URL") or _default_base_url(),
         # Only @transmedics.com addresses can be accounts (structure item 4).
         ALLOWED_EMAIL_DOMAIN=os.environ.get("ALLOWED_EMAIL_DOMAIN", "transmedics.com"),
         # Shows the "fill random preferences" button. Turn off when hosted.

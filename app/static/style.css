@@ -111,3 +111,4 @@ tfoot td { background: #f8f9fb !important; }
 .result { border-color: #abefc6; background: #ecfdf3; }
 pre.mail { white-space: pre-wrap; font: inherit; background: #f8f9fb; padding: .8rem; border-radius: 6px; }
 details.card summary { cursor: pointer; }
+.sample-form { margin-top: .8rem; }

@@ -3,6 +3,7 @@ import io
 import random
 import secrets
 from datetime import date
+from pathlib import Path
 
 from flask import (Blueprint, Response, current_app, flash, redirect,
                    render_template, request, url_for)
@@ -158,14 +159,21 @@ def invite_all():
     return redirect(url_for("admin.users"))
 
 
+SAMPLE_CSV = Path(__file__).resolve().parent.parent / "sample_data" / "pilots_sample.csv"
+
+
 @bp.route("/users/import", methods=["POST"])
 @admin_required
 def import_csv():
-    file = request.files.get("file")
-    if not file or not file.filename:
-        flash("Choose a CSV file first.", "error")
-        return redirect(url_for("admin.users"))
-    rows, errors = csv_import.parse(file.read(), _domain())
+    if request.form.get("sample") and current_app.config["TEST_TOOLS"]:
+        raw = SAMPLE_CSV.read_bytes()  # the 140 made-up pilots, for testing
+    else:
+        file = request.files.get("file")
+        if not file or not file.filename:
+            flash("Choose a CSV file first.", "error")
+            return redirect(url_for("admin.users"))
+        raw = file.read()
+    rows, errors = csv_import.parse(raw, _domain())
     if errors:
         flash("Nothing was imported. Fix these and upload again: " + " | ".join(errors[:15])
               + (" ..." if len(errors) > 15 else ""), "error")

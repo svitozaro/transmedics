@@ -5,57 +5,68 @@ Admins upload the pilot list, pilots rank their duty weeks, and the scheduler
 assigns one vacation period per pilot by seniority, following the
 *Pilot Scheduling Rules*.
 
-This first version runs **on your own computer**. Nothing is on the internet yet,
-and no real emails are sent (they appear on an **Outbox** page instead).
-Hosting, company sign-in and real email can be added later without starting over.
+This first version is a test version. No real emails are sent (they appear on an
+**Outbox** page instead). Hosting, company sign-in and real email can be added later
+without starting over.
 
 ---
 
-## Start it on your computer (about 15 minutes the first time)
+## Start it in your browser with GitHub Codespaces (nothing to install)
 
-You only do steps 1 and 2 once.
+Codespaces runs the scheduler on a computer that GitHub provides, and you use it in your
+web browser. You only need your GitHub account. Personal GitHub accounts include free
+Codespaces hours each month, which is plenty for testing.
 
-### Step 1. Install Python
+### The first time (about 5 minutes)
 
-Python is the free program the scheduler runs on.
+1. Open <https://github.com/svitozaro/transmedics> and sign in.
+2. **Pick the right version.** Until the pull request is merged, the scheduler is on a
+   separate branch. Click the branch button near the top left (it says **main**) and choose
+   **claude/project-thread-4eztdr**. Once the pull request is merged, leave it on **main**.
+3. Click the green **<> Code** button, then the **Codespaces** tab.
+4. Click **Create codespace on claude/project-thread-4eztdr** (or **on main** after merging).
+5. A new tab opens with an editor and a progress message. **Wait 2 to 4 minutes** the first
+   time while it sets itself up. You do not need to type anything.
+6. When it is ready, a panel at the bottom shows
+   `Pilot Vacation Scheduler is running at ...`, and the scheduler opens in **another
+   browser tab** by itself.
+   * If no tab opened (your browser may block pop-ups), look for a small message at the
+     bottom right saying **"Your application running on port 8000 is available"** and click
+     **Open in Browser**.
+   * Or click the **Ports** tab in the bottom panel, find **Scheduler (8000)**, and click
+     the globe icon next to its address.
+7. You now see the scheduler's welcome page. Continue with the **First tour** below.
 
-**Windows**
-1. Go to <https://www.python.org/downloads/> and click the yellow **Download Python** button.
-2. Open the downloaded file.
-3. On the first screen, **tick "Add python.exe to PATH"** at the bottom. This matters.
-4. Click **Install Now** and wait until it says "Setup was successful". Close it.
+Keep the editor tab open while you use the scheduler (it can stay in the background).
+The address of your scheduler tab is private to your GitHub account, so you can bookmark it.
 
-**Mac**
-1. Go to <https://www.python.org/downloads/> and click the yellow **Download Python** button.
-2. Open the downloaded `.pkg` file and click **Continue** / **Install** until it finishes.
+### Coming back later
 
-### Step 2. Download the scheduler
+Go to <https://github.com/codespaces>, click your codespace, and wait for it to start.
+The scheduler starts again by itself and your data (accounts, rankings, schedule) is still
+there. If no tab opens, use the **Ports** tab as in step 6.
 
-The easiest way is **GitHub Desktop**, a free app that also makes updates one click.
+Codespaces stop by themselves after 30 minutes of not being used, which is fine: just open
+it again. GitHub **deletes a codespace that has not been opened for 30 days**, including its
+test data, so treat this as a place for testing, not for the real schedule.
 
-1. Download it from <https://desktop.github.com/> and install it.
-2. Open it and sign in with your GitHub account.
-3. Click **File → Clone repository**, choose **svitozaro/transmedics**, and click **Clone**.
-   Note where it saves the folder (usually `Documents/GitHub/transmedics`).
-4. Until the pull request is merged, the scheduler lives on a separate branch: at the top of
-   GitHub Desktop, click **Current branch** and choose **claude/project-thread-4eztdr**.
-   After it is merged, stay on **main**.
+### Getting updates
 
-### Step 3. Start the scheduler
+When there is a new version, the simplest way is to create a new codespace (steps 1-6).
+Delete the old one at <https://github.com/codespaces> (click **...** then **Delete**).
 
-**Windows:** open the `transmedics` folder and double-click **`start-windows.bat`**.
-If Windows shows "Windows protected your PC", click **More info → Run anyway**.
+<details>
+<summary><strong>Alternative: run it on your own computer</strong> (needs Python installed)</summary>
 
-**Mac:**
-1. Open the **Terminal** app (press ⌘ + Space, type `Terminal`, press Enter).
-2. Type `bash ` (with a space after it), then drag the **`start-mac.command`** file from
-   the `transmedics` folder into the Terminal window, and press **Enter**.
+1. Install Python from <https://www.python.org/downloads/> (on Windows, tick
+   **"Add python.exe to PATH"** on the first screen of the installer).
+2. Download the code with GitHub Desktop (<https://desktop.github.com/>):
+   **File → Clone repository → svitozaro/transmedics**.
+3. Windows: double-click **`start-windows.bat`**. Mac: open **Terminal**, type `bash `,
+   drag **`start-mac.command`** into the window, press Enter.
+4. Your browser opens **<http://127.0.0.1:8000>**. Keep the black window open while you use it.
 
-The first start takes a minute or two while it sets itself up. Then your browser opens
-**<http://127.0.0.1:8000>** by itself. If it does not, open that address yourself.
-
-**Keep the black window open while you use the scheduler.** To stop it, close that window
-(or press `Ctrl + C` in it). Start it again the same way next time; your data is kept.
+</details>
 
 ---
 
@@ -63,9 +74,10 @@ The first start takes a minute or two while it sets itself up. Then your browser
 
 1. **Create the admin account.** The first page asks for your name, your
    `@transmedics.com` email and a password. You are the first admin.
-2. **Upload pilots.** On **Users**, choose `sample_data/pilots_sample.csv`
-   (140 made-up pilots) and click **Upload**. Your real file needs these columns:
-   first name, last name, role (PIC or SIC), date of hire, group (A or B), and optionally email.
+2. **Load pilots.** On **Users**, click **Test: load 140 sample pilots**. This loads a
+   made-up list (`sample_data/pilots_sample.csv`) so you can try everything. For your real
+   list, use **Choose File** and **Upload** instead. It needs these columns: first name,
+   last name, role (PIC or SIC), date of hire, group (A or B), and optionally email.
 3. **Invite pilots.** Click **Send invitations**. Open **Outbox** to see the emails
    pilots would get. Each has a personal link to choose a password.
 4. **Try the pilot view.** Copy one invitation link, open a **private / incognito browser
@@ -87,22 +99,19 @@ The first start takes a minute or two while it sets itself up. Then your browser
 9. **Settings** holds the year, Group A's first duty day, the PIC/SIC limits, the minimum
    crews on duty, and an optional ranking deadline. It also lists every duty period.
 
-To start over with an empty scheduler, stop it and delete the `instance` folder inside
-`transmedics`. (That folder holds the database. Do not delete it once you use real data.)
-
-## Getting updates
-
-When there is a new version: in GitHub Desktop click **Fetch origin**, then **Pull origin**.
-Stop the scheduler and start it again.
+To start over with an empty scheduler, delete the `instance` folder (in Codespaces:
+right-click it in the file list on the left and choose **Delete**), then restart the
+scheduler. That folder holds the database.
 
 ## If something goes wrong
 
 | What you see | What to do |
 |---|---|
 | "Python was not found" | Install Python (Step 1). On Windows, reinstall and tick **Add python.exe to PATH**. |
-| "Address already in use" | The scheduler is already running in another window. Use that one, or close it first. |
+| "Address already in use" | The scheduler is already running (for example in another editor tab). Use that one. |
+| Codespaces: the scheduler stopped or the page does not load | In the editor tab, click the **Terminal** panel at the bottom, type `python run.py` and press Enter. Then open it from the **Ports** tab. |
 | The page says "Your form expired" | Go back, reload the page, and try again. |
-| Forgot the admin password | Click **Forgot your password?**. The reset email appears in the Outbox, which another admin can open. If you are the only admin, open a terminal in the `transmedics` folder and run `.venv/bin/python run.py reset-password you@transmedics.com` (Windows: `.venv\Scripts\python run.py reset-password you@transmedics.com`). It prints a temporary password. |
+| Forgot the admin password | Click **Forgot your password?**. The reset email appears in the Outbox, which another admin can open. If you are the only admin, open a terminal (in Codespaces: the **Terminal** panel) and run `python run.py reset-password you@transmedics.com` (on your own Mac: `.venv/bin/python run.py ...`; Windows: `.venv\Scripts\python run.py reset-password you@transmedics.com`). It prints a temporary password. |
 
 ---
 

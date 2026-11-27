@@ -115,3 +115,13 @@ def test_bad_csv_imports_nothing(client):
     assert b"Nothing was imported" in r.data and b"Row 3" in r.data
     with client.app.app_context():
         assert User.query.count() == 1
+
+
+def test_sample_button_and_codespaces_links(client, monkeypatch):
+    make_admin(client)
+    r = post(client, "/admin/users/import", {"sample": "1"}, page="/admin/users")
+    assert b"Imported 140 pilots" in r.data
+    monkeypatch.setenv("CODESPACE_NAME", "demo")
+    monkeypatch.setenv("GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN", "app.github.dev")
+    from app import _default_base_url
+    assert _default_base_url() == "https://demo-8000.app.github.dev"

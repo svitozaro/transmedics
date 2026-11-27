@@ -1,0 +1,14 @@
+{
+  "name": "Pilot Vacation Scheduler",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "postCreateCommand": "pip install --disable-pip-version-check -r requirements-dev.txt",
+  "postAttachCommand": "NO_BROWSER=1 python run.py",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "Scheduler", "onAutoForward": "openBrowser" }
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["README.md"] },
+    "vscode": { "extensions": ["ms-python.python"] }
+  }
+}

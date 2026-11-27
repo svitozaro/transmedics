@@ -14,6 +14,13 @@
     <input type="file" name="file" accept=".csv,text/csv" required>
     <button>Upload</button>
   </form>
+  {% if test_tools %}
+  <form method="post" action="{{ url_for('admin.import_csv') }}" class="sample-form">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="sample" value="1">
+    <button class="secondary" title="For testing only">Test: load 140 sample pilots</button>
+  </form>
+  {% endif %}
 </section>
 
 <section class="card">
