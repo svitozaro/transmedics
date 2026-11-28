@@ -1,6 +1,6 @@
-# Pilot Vacation Scheduler
+# TransMedics Aviation: Pilot Vacation Portal
 
-A website that builds the yearly vacation schedule for Transmedics pilots.
+A website that builds the yearly vacation schedule for TransMedics Aviation pilots.
 Admins upload the pilot list, pilots rank their duty weeks, and the scheduler
 assigns one vacation period per pilot by seniority, following the
 *Pilot Scheduling Rules*.
@@ -114,6 +114,16 @@ scheduler. That folder holds the database.
 | Forgot the admin password | Click **Forgot your password?**. The reset email appears in the Outbox, which another admin can open. If you are the only admin, open a terminal (in Codespaces: the **Terminal** panel) and run `python run.py reset-password you@transmedics.com` (on your own Mac: `.venv/bin/python run.py ...`; Windows: `.venv\Scripts\python run.py reset-password you@transmedics.com`). It prints a temporary password. |
 
 ---
+
+## Branding
+
+* **Logo:** put the official TransMedics logo in `app/static/brand/`, named `logo.svg` or
+  `logo.png` (a version for a white background). In Codespaces, drag the file from your
+  computer onto the `brand` folder in the file list on the left, then reload the page.
+  Until then a text placeholder is shown.
+* **Brand red:** set once as `--brand` near the top of `app/static/style.css`
+  (currently a placeholder, `#c8102e`, until the official value is confirmed).
+* Emails start with "TransMedics Aviation:" and end with a TransMedics Aviation signature.
 
 ## How the rules are applied
 

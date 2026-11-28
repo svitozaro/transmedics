@@ -153,7 +153,7 @@ def run(pilots, periods_by_group, caps, required_crews=0, labels=None):
             results[p.id] = Result(p.id, pick, "rule11", None, text)
         else:
             text = (f"{who(p)} {reason} Rule 11 found no available Group "
-                    f"{p.group} week: every period is at its limit. An admin "
+                    f"{p.group} week: every week is at its limit. An admin "
                     "must assign this pilot by hand.")
             results[p.id] = Result(p.id, None, "none", None, text)
         if senior_turn:

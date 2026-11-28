@@ -262,7 +262,7 @@ def assign():
     cal = service.calendar()
     period = request.form.get("period") or None
     if period and period not in cal.by_group.get(u.group, []):
-        flash("That is not one of this pilot's duty periods.", "error")
+        flash("That is not one of this pilot's duty weeks.", "error")
         return redirect(url_for("admin.scheduler"))
     a = Assignment.query.filter_by(user_id=u.id).first()
     if not a:
@@ -333,7 +333,7 @@ def export():
     out = io.StringIO()
     w = csv.writer(out)
     w.writerow(["seniority", "last_name", "first_name", "email", "role", "group",
-                "hire_date", "vacation_start", "vacation_period", "how", "explanation"])
+                "hire_date", "vacation_start", "vacation_week", "how", "explanation"])
     for i, u in enumerate(service.pilots(), start=1):
         a = by_user.get(u.id)
         w.writerow([i, u.last_name, u.first_name, u.email, u.role, u.group, u.hire_date,
@@ -370,7 +370,7 @@ def settings_page():
         msg = "Settings saved."
         if calendar_changed and Preference.query.count():
             msg += (" The calendar changed, so rankings for dates that are no longer "
-                    "duty periods will be ignored. Ask pilots to check their rankings.")
+                    "duty weeks will be ignored. Ask pilots to check their rankings.")
         flash(msg, "ok")
         return redirect(url_for("admin.settings_page"))
     values = {k: cfg.get(k) for k in cfg.EDITABLE}

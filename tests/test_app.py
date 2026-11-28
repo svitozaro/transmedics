@@ -86,6 +86,11 @@ def test_full_flow(client):
     with client.app.app_context():
         last = EmailMessage.query.order_by(EmailMessage.id.desc()).first()
         assert last.to == email and "changed" in last.body
+        assert last.subject.startswith("TransMedics Aviation:")
+        first = EmailMessage.query.filter_by(to=email, subject="TransMedics Aviation: "
+                                             "Your 2027 vacation week").first() or \
+            EmailMessage.query.filter(EmailMessage.subject.like("%vacation week")).first()
+        assert "Your vacation week:" in first.body and "duty period" not in first.body
 
     assert client.get("/admin/scheduler/export.csv").status_code == 200
 

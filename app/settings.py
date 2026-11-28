@@ -10,8 +10,8 @@ DEFAULTS = {
     "cycle_start": (f"{date.today().year + 1}-01-01", "Group A first duty day",
                     "Group A's Day 1 of a 14-day cycle. Group B starts 7 days later "
                     "(Group A's Day 8 is Group B's Day 1)."),
-    "cap_pic": ("3", "Max PICs on vacation per duty period", "Rule 12. Default 3."),
-    "cap_sic": ("3", "Max SICs on vacation per duty period", "Rule 12. Default 3."),
+    "cap_pic": ("3", "Max PICs on vacation per week", "Rule 12. Default 3."),
+    "cap_sic": ("3", "Max SICs on vacation per week", "Rule 12. Default 3."),
     "required_crews": ("0", "Minimum crews that must stay on duty",
                        "Crew check. A crew is PIC+SIC or 2 PICs. 0 turns the check off. "
                        "ASSUMPTION: the real number is not decided yet."),

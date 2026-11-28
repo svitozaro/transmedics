@@ -43,7 +43,8 @@ def create_app(test_config=None):
         SMTP_PORT=int(os.environ.get("SMTP_PORT", "587")),
         SMTP_USER=os.environ.get("SMTP_USER", ""),
         SMTP_PASSWORD=os.environ.get("SMTP_PASSWORD", ""),
-        EMAIL_FROM=os.environ.get("EMAIL_FROM", "scheduler@transmedics.com"),
+        EMAIL_FROM=os.environ.get(
+            "EMAIL_FROM", "TransMedics Aviation <aviation-scheduler@transmedics.com>"),
         # Used to build links in emails.
         BASE_URL=os.environ.get("BASE_URL") or _default_base_url(),
         # Only @transmedics.com addresses can be accounts (structure item 4).
@@ -68,12 +69,20 @@ def create_app(test_config=None):
             if not token or request.form.get("csrf") != token:
                 abort(400, "Your form expired. Go back, reload the page and try again.")
 
+    brand_dir = Path(app.static_folder) / "brand"
+
+    def logo_file():
+        for name in ("logo.svg", "logo.png", "logo.jpg", "logo.jpeg", "logo.webp"):
+            if (brand_dir / name).exists():
+                return "brand/" + name
+        return None
+
     @app.context_processor
     def inject():
         if "csrf" not in session:
             session["csrf"] = secrets.token_urlsafe(32)
         from .auth import current_user
-        return {"csrf_token": session["csrf"], "me": current_user(),
+        return {"csrf_token": session["csrf"], "me": current_user(), "logo": logo_file(),
                 "test_tools": app.config["TEST_TOOLS"],
                 "email_backend": app.config["EMAIL_BACKEND"]}
 

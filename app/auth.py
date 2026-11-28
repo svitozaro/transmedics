@@ -85,10 +85,10 @@ def make_token(user, purpose, days):
 
 def send_invite(user):
     link = make_token(user, "invite", days=14)
-    emailer.send(user.email, "Your Transmedics vacation scheduler account",
+    emailer.send(user.email, "Your vacation portal account",
                  f"Hello {user.first_name},\n\nAn account has been created for you on the "
-                 f"pilot vacation scheduler.\nChoose your password here (link valid for "
-                 f"14 days):\n\n{link}\n\nYour username is {user.email}.\n")
+                 f"TransMedics Aviation pilot vacation portal.\n\nChoose your password here "
+                 f"(link valid for 14 days):\n{link}\n\nYour username is {user.email}.")
 
 
 @bp.route("/")
@@ -180,10 +180,10 @@ def forgot():
         u = User.query.filter_by(email=email, active=True).first()
         if u:
             link = make_token(u, "reset", days=1)
-            emailer.send(u.email, "Reset your scheduler password",
-                         f"Someone asked to reset the password for {u.email}.\n"
-                         f"Use this link within 24 hours:\n\n{link}\n\n"
-                         "If it was not you, ignore this email.\n")
+            emailer.send(u.email, "Reset your vacation portal password",
+                         f"Someone asked to reset the password for {u.email}.\n\n"
+                         f"Use this link within 24 hours:\n{link}\n\n"
+                         "If it was not you, you can ignore this email.")
             db.session.commit()
         # Same answer either way so the page does not reveal who has an account.
         flash("If that address has an account, a reset link has been emailed.", "ok")

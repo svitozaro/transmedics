@@ -13,7 +13,14 @@ from flask import current_app
 from .models import EmailMessage, db
 
 
+BRAND = "TransMedics Aviation"
+SIGNATURE = f"\n\n--\n{BRAND}\nPilot Vacation Portal\nThis is an automated message."
+
+
 def send(to: str, subject: str, body: str):
+    """Every email gets the TransMedics Aviation subject prefix and signature."""
+    subject = f"{BRAND}: {subject}"
+    body = body.rstrip() + SIGNATURE
     msg = EmailMessage(to=to, subject=subject, body=body, status="outbox")
     db.session.add(msg)
     cfg = current_app.config

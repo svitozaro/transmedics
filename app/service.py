@@ -125,14 +125,16 @@ def publish(actor_email):
         new_label = cal.labels.get(a.period, "not assigned yet") if a.period else "not assigned yet"
         if first_time or u.id not in old:
             emailer.send(u.email, f"Your {cal.year} vacation week",
-                         f"Hello {u.first_name},\n\nThe {cal.year} vacation schedule is "
-                         f"published.\nYour vacation duty period: {new_label}.\n")
+                         f"Hello {u.first_name},\n\nThe {cal.year} pilot vacation schedule "
+                         f"has been published.\n\nYour vacation week: {new_label}\n\n"
+                         "You can also see it in the vacation portal.")
             sent += 1
         elif old[u.id] != a.period:
             was = cal.labels.get(old[u.id], "none") if old[u.id] else "none"
             emailer.send(u.email, f"Change to your {cal.year} vacation week",
-                         f"Hello {u.first_name},\n\nThe {cal.year} vacation schedule was "
-                         f"updated and your week changed.\nBefore: {was}\nNow: {new_label}\n")
+                         f"Hello {u.first_name},\n\nThe {cal.year} pilot vacation schedule "
+                         f"was updated and your vacation week has changed.\n\n"
+                         f"Previous vacation week: {was}\nNew vacation week: {new_label}\n")
             sent += 1
     PublishedAssignment.query.delete()
     for a in Assignment.query.all():

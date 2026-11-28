@@ -13,8 +13,8 @@
   <button>Save settings</button>
 </form>
 <section class="card">
-  <h2>Duty periods for {{ cal.year }}</h2>
-  <p class="muted">Worked out from the settings above. Each is 8 days. A period counts for the year it starts in.</p>
+  <h2>Duty weeks for {{ cal.year }}</h2>
+  <p class="muted">Worked out from the settings above. Each duty week is 8 days (a pilot's vacation week is one of these). A week counts for the year it starts in.</p>
   <div class="grid2">
   {% for g in 'AB' %}
     <div><h3>Group {{ g }} ({{ cal.by_group[g]|length }})</h3>

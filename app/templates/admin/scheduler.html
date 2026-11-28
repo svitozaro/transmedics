@@ -10,7 +10,7 @@
     <div><strong>{{ total }}</strong> pilots</div>
     <div><strong>{{ submitted }}</strong> submitted rankings</div>
     <div>Rankings are <strong>{{ 'open' if rankings_open else 'locked' }}</strong></div>
-    <div>Limits: {{ caps.PIC }} PIC + {{ caps.SIC }} SIC per period{% if need %}, {{ need }} crews on duty{% endif %} (<a href="{{ url_for('admin.settings_page') }}">change</a>)</div>
+    <div>Limits: {{ caps.PIC }} PIC + {{ caps.SIC }} SIC per week{% if need %}, {{ need }} crews on duty{% endif %} (<a href="{{ url_for('admin.settings_page') }}">change</a>)</div>
     {% if last_run %}<div class="muted">Last run {{ last_run }} UTC</div>{% endif %}
     {% if last_published %}<div class="muted">Last published {{ last_published }} UTC</div>{% endif %}
   </div>
