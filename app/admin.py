@@ -8,7 +8,7 @@ from pathlib import Path
 from flask import (Blueprint, Response, current_app, flash, redirect,
                    render_template, request, url_for)
 
-from . import csv_import, service
+from . import csv_import, emailer, service
 from . import settings as cfg
 from .auth import (admin_required, audit, current_user, make_token, send_invite,
                    set_password)
@@ -383,7 +383,9 @@ def settings_page():
 def outbox():
     msgs = EmailMessage.query.order_by(EmailMessage.id.desc()).limit(300).all()
     log = AuditLog.query.order_by(AuditLog.id.desc()).limit(100).all()
-    return render_template("admin/outbox.html", msgs=msgs, log=log)
+    logo = url_for("static", filename="brand/logo-email.png")
+    previews = {m.id: emailer.render_html(m.body, logo) for m in msgs}
+    return render_template("admin/outbox.html", msgs=msgs, log=log, previews=previews)
 
 
 @bp.route("/test/fill-preferences", methods=["POST"])

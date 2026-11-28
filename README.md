@@ -117,13 +117,13 @@ scheduler. That folder holds the database.
 
 ## Branding
 
-* **Logo:** put the official TransMedics logo in `app/static/brand/`, named `logo.svg` or
-  `logo.png` (a version for a white background). In Codespaces, drag the file from your
-  computer onto the `brand` folder in the file list on the left, then reload the page.
-  Until then a text placeholder is shown.
-* **Brand red:** set once as `--brand` near the top of `app/static/style.css`
-  (currently a placeholder, `#c8102e`, until the official value is confirmed).
-* Emails start with "TransMedics Aviation:" and end with a TransMedics Aviation signature.
+* **Logo:** the official TransMedics logo is in `app/static/brand/logo.svg` (cropped to the
+  artwork) and `logo-email.png` (used in emails, since most email programs cannot show SVG).
+  To change it, replace those files.
+* **Brand red:** `#8b2434`, taken from the logo file. It is set once as `--brand` near the
+  top of `app/static/style.css`, and as `BRAND_RED` in `app/emailer.py`.
+* Emails start with "TransMedics Aviation:", carry the logo and a TransMedics Aviation
+  footer, and also include a plain-text version.
 
 ## How the rules are applied
 

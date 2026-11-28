@@ -8,7 +8,8 @@
 {% for m in msgs %}
   <details class="card">
     <summary><span class="muted">{{ m.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</span> · <strong>{{ m.to }}</strong> · {{ m.subject }} <span class="tag">{{ m.status }}</span></summary>
-    <pre class="mail">{{ m.body|urlize }}</pre>
+    <iframe class="mail-preview" title="Email preview" sandbox="allow-popups allow-popups-to-escape-sandbox" srcdoc="{{ previews[m.id] }}"></iframe>
+    <details class="small"><summary>Plain-text version</summary><pre class="mail">{{ m.body|urlize }}</pre></details>
   </details>
 {% else %}<p class="muted">No emails yet.</p>{% endfor %}
 </div>

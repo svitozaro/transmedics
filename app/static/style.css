@@ -1,7 +1,7 @@
 :root {
   --bg: #f5f6f8; --card: #fff; --ink: #1d2330; --muted: #667085; --line: #dde1e7;
-  /* TransMedics red. PLACEHOLDER value until the official brand hex is confirmed. */
-  --brand: #c8102e; --brand-dark: #9b0c23; --brand-tint: #fdecee; --brand-ink: #fff; --go: #12805c; --danger: #7a1020;
+  /* TransMedics red, taken from the official logo file (app/static/brand/logo.svg). */
+  --brand: #8b2434; --brand-dark: #6e1b29; --brand-tint: #f7eaec; --brand-ink: #fff; --go: #12805c; --danger: #b42318;
   --pref: #2e7d32; --rule11: #b26a00; --manual: #6941c6;
   --ranked: #e8f0fb; --unranked: repeating-linear-gradient(45deg, #fff4e5 0 4px, #ffe8c7 4px 8px);
   --off: #e1e4ea;
@@ -18,7 +18,7 @@ code { background: #eef1f5; padding: 0 .3em; border-radius: 3px; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; padding-left: .9rem; border-left: 1px solid var(--line); }
 .brand-text strong { color: var(--brand); letter-spacing: .02em; }
 .brand-text span { font-size: .85rem; color: var(--muted); }
-.logo img { display: block; height: 36px; width: auto; }
+.logo img { display: block; height: 58px; width: auto; }
 .wordmark { font-size: 1.45rem; font-weight: 300; letter-spacing: -.01em; color: #3a3f47; }
 .wordmark b { font-weight: 800; color: var(--brand); }
 .top nav { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .3rem; }
@@ -27,9 +27,9 @@ code { background: #eef1f5; padding: 0 .3em; border-radius: 3px; }
 .top nav a.on { color: var(--brand); box-shadow: inset 0 -2px 0 var(--brand); border-radius: 0; }
 .foot { text-align: center; color: var(--muted); font-size: .8rem; padding: 2rem 1rem; }
 .hero { text-align: center; margin: 1rem 0 1.5rem; }
-.hero .logo img { height: 56px; margin: 0 auto; }
+.hero .logo img { height: 120px; margin: 0 auto; }
 .hero .wordmark { font-size: 2.2rem; }
-.hero p { margin: .4rem 0 0; color: var(--muted); }
+.hero p { margin: .9rem 0 0; color: var(--muted); }
 .hero p strong { color: var(--brand); font-size: 1.1rem; letter-spacing: .02em; }
 main { max-width: 1100px; margin: 1.5rem auto; padding: 0 16px; }
 main.narrow { max-width: 560px; }
@@ -128,3 +128,4 @@ tfoot td { background: #f8f9fb !important; }
 pre.mail { white-space: pre-wrap; font: inherit; background: #f8f9fb; padding: .8rem; border-radius: 6px; }
 details.card summary { cursor: pointer; }
 .sample-form { margin-top: .8rem; }
+.mail-preview { width: 100%; height: 430px; border: 0; border-radius: 6px; background: #f5f6f8; margin-bottom: .5rem; }
