@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Vacation Portal{% endblock %} · TransMedics Aviation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+{% if me %}
+<header class="top">
+  <a class="brand" href="{{ url_for('auth.home') }}">
+    {% include "_logo.html" %}
+    <span class="brand-text"><strong>TransMedics Aviation</strong><span>Pilot Vacation Portal</span></span>
+  </a>
+  <nav>
+    {% if me.is_admin %}
+      <a href="{{ url_for('admin.scheduler') }}" {% if request.endpoint == 'admin.scheduler' %}class="on"{% endif %}>Scheduler</a>
+      <a href="{{ url_for('admin.users') }}" {% if request.endpoint and request.endpoint.startswith('admin.user') %}class="on"{% endif %}>Users</a>
+      <a href="{{ url_for('admin.settings_page') }}" {% if request.endpoint == 'admin.settings_page' %}class="on"{% endif %}>Settings</a>
+      <a href="{{ url_for('admin.outbox') }}" {% if request.endpoint == 'admin.outbox' %}class="on"{% endif %}>Outbox</a>
+    {% else %}
+      <a href="{{ url_for('pilot.ranking') }}" class="on">My vacation</a>
+    {% endif %}
+    <a href="{{ url_for('auth.change_password') }}" {% if request.endpoint == 'auth.change_password' %}class="on"{% endif %}>Password</a>
+    <form method="post" action="{{ url_for('auth.logout') }}" class="inline">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <button class="link">Sign out ({{ me.first_name or me.email }})</button>
+    </form>
+  </nav>
+</header>
+{% endif %}
+<main class="{% block mainclass %}{% endblock %}">
+  {% for cat, msg in get_flashed_messages(with_categories=true) %}
+    <div class="flash {{ cat }}">{{ msg }}</div>
+  {% endfor %}
+  {% block body %}{% endblock %}
+</main>
+<footer class="foot">TransMedics Aviation · Pilot Vacation Portal</footer>
+</body>
+</html>
